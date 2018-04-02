@@ -36,7 +36,7 @@ defmodule Storage.Adapters.Local do
     end
   end
 
-  def normalized_from do
+  defp normalized_from do
     String.replace(@host[:from], ~r(\/|\\), "")
   end
 

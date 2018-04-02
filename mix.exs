@@ -10,7 +10,8 @@ defmodule Storage.MixProject do
       deps: deps(),
 
       description: "Simple file management library",
-      package: package()
+      package: package(),
+      source_url: "https://github.com/gavlak/storage"
     ]
   end
 
@@ -31,6 +32,7 @@ defmodule Storage.MixProject do
 
   defp deps do
     [
+      {:ex_doc, "~> 0.16", only: :dev, runtime: false},
       {:plug, "~> 1.0"}
     ]
   end
