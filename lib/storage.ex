@@ -3,8 +3,8 @@ defmodule Storage do
   Documentation for Storage.
   """
 
-  @adapter Application.get_env(:storage, :adapter, Storage.Adapters.Local)
-  @root Application.get_env(:storage, :root, "priv/files")
+  defp adapter, do: Application.get_env(:storage, :adapter, Storage.Adapters.Local)
+  defp root, do: Application.get_env(:storage, :root, "/")
 
   @doc """
 
@@ -26,7 +26,7 @@ defmodule Storage do
         true -> "#{filename}#{Path.extname(source_filename)}"
       end
 
-    path = Path.join([@root, scope, filename])
+    path = Path.join([root(), scope, filename])
 
     metadata =
       source_path
@@ -53,19 +53,19 @@ defmodule Storage do
   end
 
   def put(source_path, opts \\ []) do
-    adapter = Keyword.get(opts, :adapter, @adapter)
+    adapter = Keyword.get(opts, :adapter, adapter())
 
     build_file(source_path, opts)
     |> adapter.put(source_path)
   end
 
   def url(path, opts \\ []) do
-    adapter = Keyword.get(opts, :adapter, @adapter)
+    adapter = Keyword.get(opts, :adapter, adapter())
     adapter.url(path)
   end
 
   def delete(path, opts \\ []) do
-    adapter = Keyword.get(opts, :adapter, @adapter)
+    adapter = Keyword.get(opts, :adapter, adapter())
     adapter.delete(path)
   end
 end

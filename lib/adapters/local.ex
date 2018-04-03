@@ -1,8 +1,8 @@
 defmodule Storage.Adapters.Local do
   @behaviour Storage.Adapter
 
-  @root Application.get_env(:storage, :root)
-  @host Application.get_env(:storage, :host)
+  defp root, do: Application.get_env(:storage, :root)
+  defp host, do: Application.fetch_env!(:storage, :host)
 
   def put(%Storage.File{} = file, source) do
     file.path |> Path.dirname |> File.mkdir_p!()
@@ -16,7 +16,7 @@ defmodule Storage.Adapters.Local do
   end
 
   def url(path) do
-    if is_nil(@host[:url]) do
+    if is_nil(host()[:url]) do
       raise "to generate url of a stored file, first define :host option in the :storage config"
     end
 
@@ -25,19 +25,19 @@ defmodule Storage.Adapters.Local do
     path_from =
       case String.starts_with?(path, from) do
         true -> from
-        _ -> Path.join(@root, from)
+        _ -> Path.join(root(), from)
       end
 
     if String.starts_with?(path, path_from) do
       path = String.replace_leading(path, path_from, "")
-      Path.join(@host[:url], path)
+      Path.join(host()[:url], path)
     else
-      raise "URL can be generated only for files in `#{Path.join(@root, @host[:from])}`"
+      raise "URL can be generated only for files in `#{Path.join(root(), host()[:from])}`"
     end
   end
 
   defp normalized_from do
-    String.replace(@host[:from], ~r(\/|\\), "")
+    String.replace(host()[:from], ~r(\/|\\), "")
   end
 
   def delete(path) do
@@ -45,7 +45,7 @@ defmodule Storage.Adapters.Local do
 
     path =
       case String.starts_with?(path, from) do
-        true -> Path.join(@root, path)
+        true -> Path.join(root(), path)
         _ -> path
       end
 
