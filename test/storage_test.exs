@@ -1,6 +1,5 @@
 defmodule StorageTest do
   use ExUnit.Case
-  doctest Storage
 
   @some_image "./test/support/some_image.jpg"
 

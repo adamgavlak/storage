@@ -3,7 +3,7 @@ defmodule StorageObjectTest do
 
   defmodule TestObject do
     use Storage.Object,
-      dir: "static/objects"
+      directory: "static/objects"
   end
 
   @some_file "./test/support/some_image.jpg"

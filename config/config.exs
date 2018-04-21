@@ -1,7 +1,9 @@
 use Mix.Config
 
 config :storage,
-  adapter: Storage.Adapters.Local,
+  adapter: Storage.Adapters.Local
+
+config :storage, Storage.Adapters.Local,
   root: "priv/files",
   host: [
     url: "http://localhost:4000",

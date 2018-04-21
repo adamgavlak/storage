@@ -1,18 +1,36 @@
 defmodule Storage.Adapters.Local do
+  @moduledoc """
+  The `Local` adapter is used to store files locally in filesystem.
+
+  ## Configuration
+
+      config :storage, Storage.Adapters.Local
+        root: "priv/files",
+        host: [
+          url: "http://localhost:4000",
+          from: "/static"
+        ]
+
+  * `root:` defines where all the files will be placed in file system
+  * `host:` data used in URL generation
+      * `url:` is the url that will be prepended
+      * `from:` is path in `root:` where all publicly served files are (e.g. you can configure this with `Plug.Static`)
+  """
+
   @behaviour Storage.Adapter
 
-  defp root, do: Application.get_env(:storage, :root)
-  defp host, do: Application.fetch_env!(:storage, :host)
+  defp root, do: Application.get_env(:storage, Storage.Adapters.Local)[:root]
+  defp host, do: Application.fetch_env!(:storage, Storage.Adapters.Local)[:host]
+
+  def path(components) when is_list(components) do
+    Path.join([root()] ++ components)
+  end
 
   def put(%Storage.File{} = file, source) do
     file.path |> Path.dirname |> File.mkdir_p!()
     File.copy!(source, file.path)
 
     file
-  end
-
-  def exists?(path) do
-    File.exists?(path)
   end
 
   def url(path) do
