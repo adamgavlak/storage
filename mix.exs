@@ -8,7 +8,6 @@ defmodule Storage.MixProject do
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-
       description: "Simple file management library",
       package: package(),
       docs: docs()
@@ -34,13 +33,11 @@ defmodule Storage.MixProject do
           Storage,
           Storage.Object
         ],
-
-        "Adapters": [
+        Adapters: [
           Storage.Adapter,
           Storage.Adapters.Local
         ],
-
-        "Support": [
+        Support: [
           Storage.File,
           Storage.Support
         ]
@@ -56,6 +53,7 @@ defmodule Storage.MixProject do
 
   defp deps do
     [
+      {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:ex_doc, "~> 0.18.3", only: :dev, runtime: false},
       {:plug, "~> 1.0"}
     ]

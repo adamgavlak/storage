@@ -54,8 +54,8 @@ defmodule Storage do
       }
 
   """
-  @type source() :: String.t
-  @spec put(source, keyword) :: Storage.File.t
+  @type source() :: String.t()
+  @spec put(source, keyword) :: Storage.File.t()
   def put(path, opts \\ []) do
     adapter = Keyword.get(opts, :adapter, adapter())
 
@@ -68,7 +68,7 @@ defmodule Storage do
 
   Adapter from configuration can be overriden by passing an `:adapter` option. Some adapters will need `:host` environment variable to generate correct URL.
   """
-  @spec url(String.t, keyword) :: String.t
+  @spec url(String.t(), keyword) :: String.t()
   def url(path, opts \\ []) do
     adapter = Keyword.get(opts, :adapter, adapter())
     adapter.url(path)
@@ -79,7 +79,7 @@ defmodule Storage do
 
   Adapter from configuration can be overriden by using an `:adapter` option.
   """
-  @spec delete(String.t, keyword) :: String.t
+  @spec delete(String.t(), keyword) :: String.t()
   def delete(path, opts \\ []) do
     adapter = Keyword.get(opts, :adapter, adapter())
     adapter.delete(path)

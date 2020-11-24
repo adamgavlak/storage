@@ -28,13 +28,17 @@ defmodule StorageTest do
     end
 
     test "with different file name" do
-      assert %Storage.File{path: path} = Storage.put(@some_image, filename: "some_other_image.jpg")
+      assert %Storage.File{path: path} =
+               Storage.put(@some_image, filename: "some_other_image.jpg")
+
       assert path =~ "some_other_image.jpg"
       assert :ok == Storage.delete(path)
     end
 
     test "with different file name in a scope" do
-      %Storage.File{path: path} = Storage.put(@some_image, scope: ["users", 1], filename: "some_other_image.jpg")
+      %Storage.File{path: path} =
+        Storage.put(@some_image, scope: ["users", 1], filename: "some_other_image.jpg")
+
       assert path =~ "users/1/some_other_image.jpg"
       assert :ok == Storage.delete(path)
     end
