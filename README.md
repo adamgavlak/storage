@@ -1,3 +1,4 @@
+# Warning: This package is deprecated and no longer in development. Consider using [arc](https://github.com/stavro/arc)
 # 📦 Storage [![Build Status](https://travis-ci.org/gavlak/storage.svg?branch=master)](https://travis-ci.org/gavlak/storage)
 
 **TODO: Add description**
