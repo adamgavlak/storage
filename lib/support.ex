@@ -6,7 +6,7 @@ defmodule Storage.Support do
   @doc """
   Converts `scope` to path string.
   """
-  @spec convert_scope(List.t | String.t) :: String.t
+  @spec convert_scope(list() | String.t()) :: String.t()
   def convert_scope(scope) do
     cond do
       is_list(scope) ->

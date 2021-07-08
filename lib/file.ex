@@ -13,13 +13,20 @@ defmodule Storage.File do
     * `ctime` - creation time
     * `mtime` - modification time
   """
+  @type t :: %__MODULE__{}
+
   defstruct filename: "", path: "", extension: "", content_type: "", metadata: %{}
 
   @doc """
   Creates and returns a new `Storage.File` struct from `path` with given options
   """
-  @spec new(String.t, keyword) :: %Storage.File{filename: String.t, path: String.t, extension: String.t, content_type: String.t, metadata: %{size: integer, ctime: tuple,
-  mtime: tuple}}
+  @spec new(String.t(), keyword) :: %Storage.File{
+          filename: String.t(),
+          path: String.t(),
+          extension: String.t(),
+          content_type: String.t(),
+          metadata: %{size: integer, ctime: tuple, mtime: tuple}
+        }
   def new(path, opts) do
     filename = Path.basename(path)
 

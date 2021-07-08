@@ -27,7 +27,7 @@ defmodule Storage.Adapters.Local do
   end
 
   def put(%Storage.File{} = file, source) do
-    file.path |> Path.dirname |> File.mkdir_p!()
+    file.path |> Path.dirname() |> File.mkdir_p!()
     File.copy!(source, file.path)
 
     file

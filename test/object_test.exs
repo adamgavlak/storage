@@ -14,7 +14,12 @@ defmodule StorageObjectTest do
   end
 
   test "store %Plug.Upload{} as an object" do
-    upload = %Plug.Upload{content_type: "image/jpeg", path: @some_file, filename: "some_other_name.jpg"}
+    upload = %Plug.Upload{
+      content_type: "image/jpeg",
+      path: @some_file,
+      filename: "some_other_name.jpg"
+    }
+
     assert %Storage.File{} = TestObject.store(upload)
     assert :ok == TestObject.delete("some_other_name.jpg")
   end

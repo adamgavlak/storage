@@ -70,75 +70,93 @@ defmodule Storage.Object do
     adapter = Keyword.get(opts, :adapter, Storage.Adapters.Local)
     object_scope = Keyword.get(opts, :directory, "")
 
-    quote bind_quoted: [adapter: adapter, object_scope: object_scope] do
-      def store(source, scope \\ "")
-
-      def store(%Plug.Upload{filename: filename, path: path}, scope) do
-        file =
-          path
-          |> Storage.File.new([
-            adapter: unquote(adapter),
-            scope: [unquote(object_scope), scope],
-            filename: filename
-          ])
-
-        store_object(path, scope, file)
+    quote bind_quoted: [storage: __MODULE__, adapter: adapter, object_scope: object_scope] do
+      def __instance__ do
+        %{
+          module: __MODULE__,
+          adapter: unquote(adapter),
+          object_scope: unquote(object_scope)
+        }
       end
 
-      def store(source_path, scope) do
-        file =
-          source_path
-          |> Storage.File.new([
-            adapter: unquote(adapter),
-            scope: [unquote(object_scope), scope]
-          ])
-
-        store_object(source_path, scope, file)
-      end
-
-      defp store_object(source, scope, file) do
-        filename = filename(file, scope)
-
-        file = replace_filename(file, filename)
-
-        if valid?(file) do
-          unquote(adapter).put(file, source)
-        else
-          {:error, :file_not_valid}
-        end
-      end
-
-      defp replace_filename(file, new_filename) do
-        path =
-          file.path
-          |> Path.split()
-          |> List.replace_at(-1, new_filename)
-          |> Path.join()
-
-        file
-        |> Map.put(:filename, new_filename)
-        |> Map.put(:path, path)
+      def store(source, scope \\ "") do
+        unquote(storage).store(__MODULE__, source, scope)
       end
 
       def url(filename, scope \\ "") do
-        path = build_path(filename, scope)
-        unquote(adapter).url(path)
+        unquote(storage).url(__MODULE__, filename, scope)
       end
 
       def delete(filename, scope \\ "") do
-        path = build_path(filename, scope)
-        unquote(adapter).delete(path)
+        unquote(storage).delete(__MODULE__, filename, scope)
       end
 
-      defp build_path(filename, scope) do
-        scope = Storage.Support.convert_scope(scope)
-        Path.join([unquote(object_scope), scope, filename])
-      end
+      def filename(file, _scope), do: file.filename
+      def valid?(_file), do: true
 
-      defp filename(file, _scope), do: file.filename
-      defp valid?(_file), do: true
-
-      defoverridable [filename: 2, valid?: 1]
+      defoverridable filename: 2, valid?: 1
     end
+  end
+
+  def store(module, %Plug.Upload{filename: filename, path: path}, scope) do
+    file =
+      path
+      |> Storage.File.new(
+        adapter: module.__instance__.adapter,
+        scope: [module.__instance__.object_scope, scope],
+        filename: filename
+      )
+
+    store_object(module, path, scope, file)
+  end
+
+  def store(module, source_path, scope) do
+    file =
+      source_path
+      |> Storage.File.new(
+        adapter: module.__instance__.adapter,
+        scope: [module.__instance__.object_scope, scope]
+      )
+
+    store_object(module, source_path, scope, file)
+  end
+
+  defp store_object(module, source, scope, file) do
+    filename = module.filename(file, scope)
+
+    file = replace_filename(file, filename)
+
+    if module.valid?(file) do
+      module.__instance__.adapter.put(file, source)
+    else
+      {:error, :file_not_valid}
+    end
+  end
+
+  defp replace_filename(file, new_filename) do
+    path =
+      file.path
+      |> Path.split()
+      |> List.replace_at(-1, new_filename)
+      |> Path.join()
+
+    file
+    |> Map.put(:filename, new_filename)
+    |> Map.put(:path, path)
+  end
+
+  def url(module, filename, scope \\ "") do
+    path = build_path(module, filename, scope)
+    module.__instance__.adapter.url(path)
+  end
+
+  def delete(module, filename, scope \\ "") do
+    path = build_path(module, filename, scope)
+    module.__instance__.adapter.delete(path)
+  end
+
+  defp build_path(module, filename, scope) do
+    scope = Storage.Support.convert_scope(scope)
+    Path.join([module.__instance__.object_scope, scope, filename])
   end
 end
